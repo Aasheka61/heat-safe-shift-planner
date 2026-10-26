@@ -1,85 +1,258 @@
 # Heat-Safe Shift Planner
 
-Team: Pirates
-Team Lead: Amirtha V.
-Team Member: Aasheka E.
-Registration ID: HSC|TN|01643
-Theme: AI, GIS & Emerging Technologies (climate resilience) · SDG 3, 8, 13 · State: Tamil Nadu
+**A weather-based heat-safety planning tool for outdoor workers**
 
-> Construction workers in Tamil Nadu follow fixed shifts in humid heat. Official guidance is a one-size
-> 12-3 pm advisory. This tool tells a site supervisor, the evening before, **when to work, slow down or stop**,
-> using a physical heat-stress model and ISO 7243 limits, and keeps an auditable log of every decision.
+A prototype designed to help supervisors plan outdoor work during hot weather by estimating Wet-Bulb Globe Temperature (WBGT), applying configurable work-rest limits, and prioritising work during comparatively cooler hours.
 
-**Not an AI score.** The safety numbers come from a published physical model (Liljegren WBGT) and a standard
-(ISO 7243). No language model writes or changes the safety instructions; messages come from fixed templates.
+**Team Name:** Pirates  
+**Team Lead:** Amirtha V.  
+**Team Member:** Aasheka E.  
+**Registration ID:** HSC|TN|01643  
+**Theme:** AI, GIS & Emerging Technologies — Climate Resilience  
+**SDGs:** SDG 3 — Good Health and Well-being; SDG 8 — Decent Work and Economic Growth; SDG 13 — Climate Action  
+**Target Region:** Tamil Nadu, India
 
-## What it does
-1. Takes an hourly weather forecast for the site (Open-Meteo, free) or a CSV.
-2. Computes outdoor **WBGT** each hour (Liljegren model via `thermofeel`).
-3. Applies **ISO 7243** limits for the work intensity, acclimatization and clothing.
-4. Plans minutes of work per hour for each task: heaviest work in the coolest hours.
-5. Produces a Tamil/English supervisor message and a **stoppage log** (CSV) showing inputs, limit and decision.
-6. **Backtests** the planner against fixed shifts (9-6 and a 12-3 break) on past days.
+**GitHub Repository:** https://github.com/Aasheka61/heat-safe-shift-planner
 
-## Quick start (about 5 minutes)
+---
+
+## 1. Problem Statement
+
+Outdoor workers such as construction workers, street vendors, delivery workers and other people working under direct sunlight can face dangerous heat exposure. Fixed work schedules and generic midday breaks may not adequately account for changing weather conditions throughout the day.
+
+Supervisors need a practical way to identify comparatively safer working hours, plan tasks according to their intensity, and communicate heat-related precautions clearly.
+
+Heat-Safe Shift Planner explores how weather data and heat-stress modelling can support more informed outdoor work scheduling.
+
+## 2. Proposed Solution
+
+Heat-Safe Shift Planner is a Python-based prototype that analyses hourly weather data and produces a heat-aware work schedule.
+
+The prototype:
+
+- Retrieves weather forecast and historical archive data through Open-Meteo.
+- Accepts hourly weather data from CSV files.
+- Estimates WBGT using the Liljegren method implemented through the `thermofeel` library.
+- Applies configured heat-exposure limits based on work intensity, acclimatisation and clothing assumptions.
+- Prioritises tasks during comparatively cooler hours, considering task intensity.
+- Generates English and Tamil supervisor messages.
+- Produces a stoppage-log CSV to support review of planned work restrictions.
+- Compares the planner with fixed-shift policies using a historical-weather backtest.
+
+The tool is intended to support decision-making, not replace qualified occupational-safety professionals, on-site measurements or official safety procedures.
+
+## 3. How It Works
+
+1. **Weather data input:** Load hourly forecast data or a compatible CSV file.
+2. **Heat-stress estimation:** Calculate model-based WBGT values from the available meteorological inputs.
+3. **Work-limit assessment:** Compare estimated heat stress with the configured limits and task assumptions.
+4. **Schedule planning:** Prioritise higher-intensity tasks during comparatively cooler eligible hours.
+5. **Safety communication:** Generate supervisor messages and a stoppage log.
+6. **Evaluation:** Compare planned schedules with fixed-shift alternatives using historical archive weather.
+
+## 4. Technology Stack
+
+- **Programming language:** Python
+- **Weather data:** Open-Meteo forecast and historical archive data
+- **Heat-stress modelling:** `thermofeel` and the Liljegren WBGT method
+- **Data processing:** Python data-processing libraries
+- **Testing:** `pytest`
+- **Outputs:** CSV reports and a backtest chart
+
+The prototype uses a physics-based heat-stress calculation and configured rules for planning. It does not claim that an AI-generated safety score independently establishes whether working conditions are safe.
+
+## 5. Requirements
+
+- Python installed on your computer
+- Git, if you want to clone the repository
+- VS Code or another Python-compatible editor (optional)
+
+Install the dependencies listed in `requirements.txt`. The project does not require an API key for the documented Open-Meteo workflow.
+
+## 6. Installation and Setup
+
+### Step 1: Clone the repository
+
 ```bash
+git clone https://github.com/Aasheka61/heat-safe-shift-planner.git
+cd heat-safe-shift-planner
+```
+
+Alternatively, download the repository as a ZIP file from GitHub and extract it.
+
+### Step 2: Create a virtual environment
+
+**Windows PowerShell:**
+
+```powershell
 python -m venv .venv
-# Windows:  .venv\Scripts\activate        Mac/Linux:  source .venv/bin/activate
-pip install -r requirements.txt
-python -m pytest -q                       # all tests should pass
-python -m heatplanner.cli plan            # plan for a sample day (offline)
-streamlit run app.py                      # interactive demo in the browser
 ```
-No API keys and no environment variables are needed. Optional: pass `--lat/--lon` to change the site location.
 
-## Use real weather data
-```bash
+If environment creation fails, resolve the Python installation or virtual-environment issue before continuing.
+
+### Step 3: Activate the environment
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+If PowerShell blocks activation, use an approved environment-activation method for your system rather than changing security settings unnecessarily.
+
+### Step 4: Install dependencies
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+### Step 5: Run the tests
+
+```powershell
+python -m pytest -q
+```
+
+**Development test result:** 28 tests passed in the tested project environment. Results may vary if dependencies or code are changed.
+
+## 7. Running the Prototype
+
+Run these commands from the project root with the virtual environment activated.
+
+### A. Generate a sample plan
+
+```powershell
+python -m heatplanner.cli plan
+```
+
+The sample workflow uses the project's synthetic sample forecast. Its output demonstrates how the planner operates; it must not be interpreted as a real-world heat-safety assessment.
+
+### B. View the command options
+
+```powershell
+python -m heatplanner.cli --help
+```
+
+The available command groups include `plan`, `backtest` and `fetch`.
+
+### C. Fetch weather data
+
+The following command retrieves data for the specified date range:
+
+```powershell
 python -m heatplanner.cli fetch --start 2025-04-01 --end 2025-05-31
-python -m heatplanner.cli backtest \
-  --forecast data/chennai_forecast_2025-04-01_2025-05-31.csv \
-  --archive  data/chennai_archive_2025-04-01_2025-05-31.csv --label chennai_apr_may_2025
-python -m heatplanner.cli plan --live --site "My site"     # tomorrow's live forecast (internet)
 ```
 
-### Weather CSV format
-`time, temperature_2m (C), relative_humidity_2m (%), surface_pressure (hPa), wind_speed_10m (m/s), shortwave_radiation (W/m2), direct_radiation (W/m2)` with hourly local timestamps (see `data/sample_*_SYNTHETIC.csv`).
+The tested workflow saved these files:
 
-## Results
-> Fill this in after running the backtest on REAL data (see above). Numbers from the bundled sample are **synthetic
-> and are not findings**.
+- `data/chennai_forecast_2025-04-01_2025-05-31.csv`
+- `data/chennai_archive_2025-04-01_2025-05-31.csv`
 
-| Policy | Scheduled min | Safe min | Overload min | Safe % | Days with overload |
-|---|---|---|---|---|---|
-| status_quo_9_to_6 | NOT RUN | NOT RUN | NOT RUN | NOT RUN | NOT RUN |
-| blanket_12_to_3 | NOT RUN | NOT RUN | NOT RUN | NOT RUN | NOT RUN |
-| planner_no_buffer | NOT RUN | NOT RUN | NOT RUN | NOT RUN | NOT RUN |
-| planner_buffered | NOT RUN | NOT RUN | NOT RUN | NOT RUN | NOT RUN |
-| planner_oracle (upper bound) | NOT RUN | NOT RUN | NOT RUN | NOT RUN | NOT RUN |
+The archive data is a reanalysis-based proxy. It is not a record of individual workers' heat exposure or measurements from a particular worksite.
 
-**Real-data evaluation pending.** Do not report performance claims until the forecast-history and archive downloads complete and the generated CSV is reviewed. Record period, Chennai coordinates, task intensity, evaluation-day count and calibrated buffer alongside the results.
+### D. Run the historical backtest
 
-## Project layout
-```
-heatplanner/   limits.py (ISO limits)  wbgt.py (Liljegren)  data.py  planner.py  messages.py  backtest.py  cli.py
-app.py         Streamlit demo
-tests/         automated tests (pytest; verify locally after installing dependencies)
-data/          SYNTHETIC sample weather (for offline demo/tests only)
-docs/          TECHNICAL_DESIGN.md  ASSUMPTIONS.md  AI_USAGE.md  DEMO_VIDEO_SCRIPT.md
-scripts/       make_sample_data.py
+```powershell
+python -m heatplanner.cli backtest --forecast data/chennai_forecast_2025-04-01_2025-05-31.csv --archive data/chennai_archive_2025-04-01_2025-05-31.csv --label chennai_apr_may_2025
 ```
 
-## Honest limitations
-- WBGT comes from forecast/reanalysis data, not a site sensor. Gridded WBGT is minimally validated against ground
-  observations; we add a forecast-error buffer and plan an on-site sensor check.
-- The "actual weather" in the backtest is an ERA5 reanalysis proxy, not worker-level measurements.
-- ISO 7243 values were taken from secondary summaries and must be checked against the standard.
-- Task-to-intensity presets (heavy 230, medium 190, light 110 W/m2) and the clothing adjustment are assumptions.
-- The Tamil text needs native-speaker and safety-officer review. No real SMS/WhatsApp sending is implemented.
-- Not a medical device or a compliance certificate; a safety officer must stay in the loop.
+The tested run generated:
 
-## Data and credits
-Weather data: [Open-Meteo.com](https://open-meteo.com/) (attribution required; check their terms for your use).
-WBGT: Liljegren et al. (2008) via [thermofeel](https://github.com/ecmwf/thermofeel). See `docs/ASSUMPTIONS.md` for sources.
+- `outputs/chennai_apr_may_2025_summary.csv`
+- `outputs/chennai_apr_may_2025_chart.png`
 
-## License
-MIT, see `LICENSE`. AI-assistance disclosure: `docs/AI_USAGE.md`.
+These are generated outputs. They will be available in a fresh clone only if they have also been committed to the repository or generated by running the relevant commands.
+
+## 8. Preliminary Historical-Weather Results
+
+**Location:** Chennai, Tamil Nadu  
+**Period:** 1 April–31 May 2025  
+**Evaluation method:** 30 days for forecast-error calibration, followed by 31 days for evaluation.
+
+The following results came from a completed prototype backtest using Open-Meteo historical forecast data and archive reanalysis data.
+
+| Policy | Scheduled minutes | Model-compliant minutes | Overload minutes | Safe-minute percentage | Days with overload |
+|---|---:|---:|---:|---:|---:|
+| Fixed shift, 9 AM–6 PM | 14,880 | 2,315 | 12,565 | 15.6% | 31/31 |
+| Fixed shift with 12 PM–3 PM break | 14,880 | 2,980 | 11,900 | 20.0% | 31/31 |
+| Planner without buffer | 5,275 | 5,275 | 0 | 100.0% | 0/31 |
+| Planner with calibrated buffer | 5,275 | 5,275 | 0 | 100.0% | 0/31 |
+| Archive-informed oracle comparison | 5,275 | 5,275 | 0 | 100.0% | 0/31 |
+
+**Forecast-error calibration:** The selected buffer was 0.00°C using the configured 90th-percentile calibration method. This result means the selected percentile of the calibration errors did not produce a positive buffer; it does not mean that forecasts never underestimate heat stress.
+
+### Interpretation
+
+The planner scheduled 5,275 work minutes during the evaluation period, compared with 14,880 minutes for each fixed-shift policy. Its 100% model-compliant-minute score therefore reflects a more restrictive schedule, not equivalent work output with zero risk.
+
+The archive-informed oracle uses archive weather when making scheduling decisions. It is an upper-bound comparison, not a deployable forecast-based policy.
+
+These results are preliminary model-based results, not validated occupational-safety findings. The archive data is a reanalysis proxy rather than worker-level or on-site sensor measurements. The WBGT implementation, hourly radiation assumptions, ISO 7243 thresholds, task-intensity presets and forecast-error calibration require further verification before operational use.
+
+## 9. Limitations and Safety Considerations
+
+- **Model estimates are not direct measurements:** Estimated WBGT may differ from conditions at a particular worksite.
+- **Weather data has limitations:** Historical archive data does not capture each worker's actual exposure, hydration, health, clothing, workload or local microclimate.
+- **Safety thresholds require verification:** Configured work-rest limits and task-intensity assumptions must be checked against applicable standards and qualified occupational-safety guidance.
+- **Scheduling is heuristic:** The current planner prioritises tasks using a rule-based approach. Its scheduling method has not been established as an independently validated occupational-safety method.
+- **Zero overload is not zero risk:** A schedule with no model-calculated overload minutes does not guarantee safe working conditions.
+- **Operational use requires validation:** Field testing, appropriate on-site measurements, expert review and worker feedback are necessary before the tool can inform actual workplace decisions.
+
+When actual conditions conflict with a generated schedule, applicable safety procedures and qualified safety personnel must take precedence.
+
+## 10. Future Improvements
+
+- Validate the WBGT calculations and work-rest thresholds against authoritative occupational-safety guidance.
+- Compare model estimates with suitable on-site weather and heat-stress measurements.
+- Evaluate performance across additional locations, seasons and weather conditions.
+- Improve task scheduling using worker feedback, workload constraints and validated occupational-safety rules.
+- Add clearer visualisations of hourly heat stress and work-rest recommendations.
+- Improve Tamil and English communication for supervisors and outdoor workers.
+- Develop a user-friendly interface for entering site information and reviewing schedules.
+- Evaluate forecast uncertainty and conservative safety margins using more extensive out-of-sample data.
+
+## 11. Project Structure
+
+The main project components include:
+
+- `heatplanner/cli.py` — command-line interface for planning, fetching and backtesting.
+- `heatplanner/data.py` — weather-data handling and preparation.
+- `heatplanner/wbgt.py` — WBGT calculation.
+- `heatplanner/limits.py` — configured heat-exposure limits and task assumptions.
+- `heatplanner/planner.py` — work-scheduling logic.
+- `heatplanner/backtest.py` — historical evaluation and comparison of policies.
+- `data/` — sample and retrieved weather datasets.
+- `outputs/` — generated reports and charts.
+- `requirements.txt` — Python dependencies.
+- `sample_forecast_SYNTHETIC.csv` — synthetic demonstration data, where included in the repository.
+- `README.md` — project documentation.
+
+Some generated files may be created locally rather than tracked by Git. The exact files available in a fresh clone depend on what has been committed to the repository.
+
+## 12. Social Impact
+
+Heat-Safe Shift Planner explores a practical application of weather data and computational heat-stress modelling to a growing climate-resilience challenge.
+
+The project aims to support:
+
+- **SDG 3 — Good Health and Well-being:** Better awareness of occupational heat exposure.
+- **SDG 8 — Decent Work and Economic Growth:** More informed planning for outdoor work.
+- **SDG 13 — Climate Action:** Exploring data-driven adaptation to extreme heat.
+
+The intended beneficiaries include construction workers, street vendors, delivery workers and other people whose work requires prolonged outdoor exposure.
+
+The prototype is a starting point for research and validation, rather than a certified safety system.
+
+## 13. Team
+
+**Team Name:** Pirates
+
+- **Team Lead:** Amirtha V.
+- **Team Member:** Aasheka E.
+
+**Registration ID:** HSC|TN|01643
+
+**Project:** Heat-Safe Shift Planner  
+**Region:** Tamil Nadu, India  
+**Theme:** AI, GIS & Emerging Technologies — Climate Resilience
+
+---
+
+*Disclaimer: This project is a prototype for educational and evaluation purposes. It does not replace official weather alerts, on-site WBGT measurements, applicable occupational-safety standards or professional safety advice.*
