@@ -1,0 +1,6 @@
+policy,scheduled_min,safe_min,overload_min,safe_pct,days_with_overload,eval_days,worst_day_overload_min
+status_quo_9_to_6,14880,2315,12565,15.6,31,31,460
+blanket_12_to_3,14880,2980,11900,20.0,31,31,460
+planner_no_buffer,5275,5275,0,100.0,0,31,0
+planner_buffered,5275,5275,0,100.0,0,31,0
+planner_oracle,5275,5275,0,100.0,0,31,0
