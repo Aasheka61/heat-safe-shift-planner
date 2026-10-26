@@ -1,0 +1,6 @@
+numpy
+pandas
+thermofeel>=2.3.0
+matplotlib
+streamlit
+pytest
