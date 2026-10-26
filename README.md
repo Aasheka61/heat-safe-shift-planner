@@ -1,6 +1,9 @@
 # Heat-Safe Shift Planner
 
-**Team:** [ADD YOUR ACTUAL TEAM NAME] · Hack for Social Cause (VBYLD 2027) · **Registration ID:** [VERIFY IN PORTAL]
+Team: Pirates
+Team Lead: Amirtha V.
+Team Member: Aasheka E.
+Registration ID: HSC|TN|01643
 Theme: AI, GIS & Emerging Technologies (climate resilience) · SDG 3, 8, 13 · State: Tamil Nadu
 
 > Construction workers in Tamil Nadu follow fixed shifts in humid heat. Official guidance is a one-size
